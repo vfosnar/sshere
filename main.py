@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     if(win): # Is computer running on windows
         # windows has different syntax
-        ssh = 'ssh -t {} -p {} cmd /K "cd "{}""'
+        ssh = 'ssh -t {} -p {} cmd /K "cd /d "{}""'
         # Win filesystem begins with C: not /C:
         server = server[1:]
         if(len(server) == 0):
