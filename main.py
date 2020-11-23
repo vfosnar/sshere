@@ -57,6 +57,9 @@ if __name__ == "__main__":
         ssh = 'ssh -t {} -p {} cmd /K "cd "{}""'
         # Win filesystem begins with C: not /C:
         server = server[1:]
+        if(len(server) == 0):
+            print("Can't ssh into / of windows computer!")
+            exit(1)
         # Windows wont cd into C: must be C:/
         if(server[-1] != '/'):
             server += '/'
