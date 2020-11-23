@@ -1,5 +1,5 @@
 # sshere
- Python script for automating ssh to a directory on a sftp network drive
+ Python3 script for automating ssh to a directory on a sftp network drive
 ## Usage
      # Mount the sftp system
      sshfs user@example.com:/ /home/localuser/example
