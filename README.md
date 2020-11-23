@@ -28,7 +28,7 @@
     cd sshere
     
     # Edit config to match your own ssh servers
-    sudo nano ./config.json
+    nano ./config.json
     
     # Add sshere alias to the bashrc file
     make install
