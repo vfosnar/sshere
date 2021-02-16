@@ -1,18 +1,28 @@
 # sshere
  Python3 script for automating ssh to a directory on a sftp network drive
 ## Usage
-    # Mount the sftp system
+    # mount the sftp system
     sshfs user@example.com:/ /home/localuser/example
     
     # cd into the mounted fs
     cd /home/localuser/example
     
-    # And start sshere
+    # and start sshere
+    # this will ask for password and open "/" on the server
     sshere
     
-    # This will ask for password and open "/" on the server
+    # Exit shell to exit ssh
+    exit
+    
+    # cd to some subdirectory
+    cd subdir
+    
+    # sshere to server
+    # this will open "/subdir" cwd in server shell
+    sshere
+    
 #### sshpass support. if you can use keys instead, please
-    # First install sshpass
+    # first install sshpass
     # Debian: sudo apt install sshpass
     # Arch: pacman -S sshpass
     
@@ -21,7 +31,7 @@
         "user@example.com":{"passwd":"super secret password"}
     }
     
-    # It will login to the server automatically
+    # now it will auth to the server automatically
 
 ## How-to install
     # Clone this repo
