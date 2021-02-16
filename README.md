@@ -10,7 +10,7 @@
     # And start sshere
     sshere
     
-    # This will ask for password and open / on the server
+    # This will ask for password and open "/" on the server
 #### sshpass support. if you can use keys instead, please
     # First install sshpass
     # Debian: sudo apt install sshpass
