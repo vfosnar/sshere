@@ -11,7 +11,7 @@
     sshere
     
     # This will ask for password and open / on the server
-#### sshpass support
+#### sshpass support. if you can use keys instead, please
     # If you install sshpass like this
     sudo apt install sshpass
     
