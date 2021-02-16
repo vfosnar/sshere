@@ -12,8 +12,9 @@
     
     # This will ask for password and open / on the server
 #### sshpass support. if you can use keys instead, please
-    # If you install sshpass like this
-    sudo apt install sshpass
+    # First install sshpass
+    # Debian: sudo apt install sshpass
+    # Arch: pacman -S sshpass
     
     # edit config.json and change config to
     {
