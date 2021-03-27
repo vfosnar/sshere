@@ -21,7 +21,7 @@
     # this will open "/subdir" cwd in server shell
     sshere
     
-#### sshpass support. if you can use keys instead, please
+#### sshpass support. If you can, please use keys instead
     # first install sshpass
     # Debian: sudo apt install sshpass
     # Arch: pacman -S sshpass
