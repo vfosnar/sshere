@@ -1,75 +1,98 @@
-import os, json
+import os, json, sys
 
-# Load config file
-servers = json.loads(open(os.path.join(os.path.dirname(__file__), 'config.json'), 'rb').read().decode())
+def log(text: str, error: bool = False):
+    if(error):
+        sys.stdout.write("\e[B")
+    print("[sshere]", text)
+    if(error):
+        sys.stdout.write("\e[0m")
+        exit(1)
 
 if __name__ == "__main__":
+    # Load config file
+    servers = {}
+    
+    configPath = os.path.join(os.path.dirname(__file__), 'config.json')
+    if(os.path.exists(configPath)):
+        with open(configPath, 'r', encoding="utf-8") as file:
+            servers = json.loads(file.read())
+        
     # name@address:/path/on/server
-    mnt = os.popen("df --output=source .").read().split('\n')[1]
+    serverMountTag = os.popen("df --output=source .").read().split('\n')[1]
     # /local/mount/path
-    tar = os.popen("df --output=target .").read().split('\n')[1]
+    localMountPath = os.popen("df --output=target .").read().split('\n')[1]
 
-    if(mnt[:len('/dev')] == '/dev'):
-        print("Only sftp is supported..")
-        exit(1)
+    if(serverMountTag[:len('/dev')] == '/dev'):
+        log("Filesystem must be a SFTP, make sure you are in the right directory.", True)
     # name@address
-    addr = mnt.split(":")[0]
+    serverAddress = serverMountTag.split(":")[0]
     
     # /path/on/server
-    base = ":".join(mnt.split(":")[1:])
+    serverMountPath = ":".join(serverMountTag.split(":")[1:])
 
     # Get current working directory and strip out mount point
     # [1:] -> get rid if / on the beggining and thus make it relative path
-    rels = os.getcwd()[len(tar):][1:]
+    relativeCWD = os.getcwd()[len(localMountPath):][1:]
 
     # Change it to absolute path by adding server path to the mount point
-    server = os.path.join(base, rels)
+    serverCWD = os.path.join(serverMountPath, relativeCWD)
 
     # Defaults
     port = 22
     passwd = None
     win = False
 
-    servers_name = None
+    serverConfigName = None
     
     # Check if name@address is in the config
-    if(addr in servers):
-        servers_name = addr
+    if(serverAddress in servers):
+        serverConfigName = serverAddress
     
     # Check if name@address:/local/path is in the config
-    elif("{}:{}".format(addr, tar) in servers):
-        servers_name = "{}:{}".format(addr, tar)
+    elif("{}:{}".format(serverAddress, localMountPath) in servers):
+        serverConfigName = "{}:{}".format(serverAddress, localMountPath)
 
     # Load ssh configuration from config.json
-    if(servers_name):
-        if("port" in servers[servers_name]):
-            port = servers[servers_name]['port']
-        if("passwd" in servers[servers_name]):
-            passwd = servers[servers_name]['passwd']
-        if("win" in servers[servers_name]):
-            win = servers[servers_name]['win']
+    if(serverConfigName):
+        if("port" in servers[serverConfigName]):
+            port = servers[serverConfigName]['port']
+        if("password" in servers[serverConfigName]):
+            passwd = servers[serverConfigName]['password']
+        if("windows" in servers[serverConfigName]):
+            win = servers[serverConfigName]['windows']
+        
+        if("passwd" in servers[serverConfigName]):
+            log("Using 'passwd' is deprecated, use 'password' instead.")
+            passwd = servers[serverConfigName]['passwd']
+        if("win" in servers[serverConfigName]):
+            log("Using 'win' is deprecated, use 'windows' instead.")
+            win = servers[serverConfigName]['win']
         
     # command used to connect to the linux server
     ssh = 'ssh -t {} -p {} "cd \\"{}\\"; bash --login"'
 
-    if(win): # Is computer running on windows
-        # windows has different syntax
+    if(win):
+        # When the server computer is running windows
+        # we need to change the shell command
         ssh = 'ssh -t {} -p {} cmd /K "cd /d "{}""'
-        # Win filesystem begins with C: not /C:
-        server = server[1:]
-        if(len(server) == 0):
-            print("Can't ssh into / of windows computer!")
-            exit(1)
-        # Windows wont cd into C: must be C:/
-        if(server[-1] != '/'):
-            server += '/'
+        if(serverCWD == "/"):
+            log("Can't ssh into / of a Windows computer.", True)
+        # We need to patch CWD because windows filesystem uses 'C:' and not '/C:'
+        serverCWD = serverCWD[1:]
+        # We must also patch the / at the end because Windows won't cd into 'C:', it must be 'C:/'
+        if(serverCWD[-1] != '/'):
+            serverCWD += '/'
 
-    print("Connecting to {} at port {}".format(addr, port))
-    # if passwd is specified in config.json file then sshpass is used
-    # sshpass must be already installed:
-    #  sudo apt install sshpass
+    log("Connecting to {} at a port {}.".format(serverAddress, port))
     if(passwd):
-        os.system('sshpass -p {} '.format(passwd) + ssh.format(addr, port, server))
-        pass
+        # User defined password in the config.json file.
+        # This should not be used but I needed it so here it goes.
+        # We call sshpass with user's password and our ssh command:
+        os.system('sshpass -p "{password}" {ssh}'.format(
+            password = passwd,
+            ssh = ssh.format(serverAddress, port, serverCWD)
+            ))
     else:
-        os.system(ssh.format(addr, port, server))
+        # User wants interactive login or uses a ssh keypair.
+        # Anyways we just call the ssh command:
+        os.system(ssh.format(serverAddress, port, serverCWD))

@@ -1,0 +1,7 @@
+{
+    "name@example.com": {"port":2222},
+    "different_name@example.com": {"passwd":"examplepass", "win":true},
+    "ip_was_used@192.168.1.100": {"passwd":"super secret pass"},
+    "samename@samedomain.com:/local/mount/point": { },
+    "samename@samedomain.com:/different/local/mount/point": {"port":2222}
+}
