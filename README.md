@@ -2,7 +2,7 @@
  Python3 script for automating ssh into a server based on CWD in a SFTP network drive
 ## Usage
 Navigate into the SFTP filesystem
-```python
+```bash
 sshfs user@example.com:/ /home/localuser/sftp
 cd /home/localuser/sftp/subdirectory
 ```
@@ -11,10 +11,12 @@ And run ``sshere``. This will find the mount point, compare it to the CWD and ss
 This script also works with mount other than root directory.
 
 ## Installation
-    git clone https://github.com/vfosnar/sshere.git
-    cd sshere
-    
-    make install
+```bash
+git clone https://github.com/vfosnar/sshere.git
+cd sshere
+
+make install
+```
 
 ## Config file
 Config file contains dictionary of ``serverName`` as a key and a dictionary specifying ``options`` as a value.
